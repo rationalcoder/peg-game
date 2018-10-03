@@ -92,7 +92,7 @@ def show(kd) :
     print('')
   print('') 
 
-# replay a sequence of move, showng state of cells  
+# replay a sequence of moves, showing the state of cells  
 def replay(ms,kd) :  
    for m in ms :
      show(kd)
@@ -116,7 +116,7 @@ def terse() :
     print('')
 
 # visualizes a solution for each first 5 positions
-# others look the same after 60 degre rotations
+# others look the same after 120 degrees rotations
 def go() :
   for i in range(5) :
     print('='*3,i,'='*3)
