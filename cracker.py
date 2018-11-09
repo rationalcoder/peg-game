@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # Cracker Barrel peg puzzle: 
 # see https://shop.crackerbarrel.com/toys-games/games/travel-games/peg-game/606154
 
@@ -43,7 +44,7 @@ def move(kd,fot) :
    k,d=kd
    f,o,t=fot
    if d[f]==1 and d[o]==1 and d[t]==0 :
-     c=d.copy()
+     c=list(d)
      c[f]=0 # moved away
      c[o]=0 # remove jumped over
      c[t]=1 # landing here after jump
@@ -98,7 +99,7 @@ def replay(ms,kd) :
      show(kd)
      #print(kd)
      k,d=kd
-     d=d.copy()
+     d=list(d)
      f,o,t=m
      d[f]=0
      d[o]=0
