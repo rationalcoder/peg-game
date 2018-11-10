@@ -35,6 +35,7 @@ set_at(Index, List, Val, OldVal, Result):-
     nth0(Index, List,   OldVal, BeforeSet),
     nth0(Index, Result, Val,    BeforeSet).
 
+% Performs a move, if possible.
 move(Board, Move, BoardAfterMove):-
     [PegsLeft | [CellList]] = Board,
     [F, O, T] = Move, NewPegsLeft is PegsLeft-1,
@@ -44,16 +45,20 @@ move(Board, Move, BoardAfterMove):-
     set_at(T, NewCellList1, 1, 0, NewCellListFinal),
     BoardAfterMove = [NewPegsLeft, NewCellListFinal].
 
+% Checks if `Board` can be solved in `Moves`.
 solve([1, _], []).
 solve(Board, Moves):-
     [Move | T] = Moves,
     move(Board, Move, BoardAfter),
     solve(BoardAfter, T).
 
+% Constructs a board with peg `I` empty, picks the first solution, and
+% returns the moves in the solution.
 puzzle(I, Moves):-
     init(I, Board),
     once(solve(Board, Moves)).
 
+% Same but also returns the initial board.
 puzzle(I, Moves, Board):-
     init(I, Board),
     once(solve(Board, Moves)).
@@ -65,6 +70,7 @@ write_indices(CellList, Indices):-
     ((nth0(H, CellList, 0),write('. '));(nth0(H, CellList, 1),write('x '))),
     write_indices(CellList, T).
 
+% Shows the result by printing out successive states.
 show(Board):-once(show(Board, [[4,0,0],[3,1,2],[2,3,5],[1,6,9],[0,10,14]])).
 show(Board, LineDescs):-
     [_ | [CellList]] = Board,
@@ -78,14 +84,23 @@ show(Board, LineDescs):-
     
 show(_, []).
 
-
+% Replay a sequence of moves, showing the state of the cells.
 replay(_, []).
 replay(Board, Moves):-
     [Move | TailMoves] = Moves,
     move(Board, Move, BoardAfter),
     show(BoardAfter),
+    nl,
     replay(BoardAfter, TailMoves).
 
+
+replay_no_show(_, [], []).
+replay_no_show(Board, Moves, BoardList):-
+    [Move | TailMoves] = Moves,
+    move(Board, Move, BoardAfter),
+    [BoardAfter | BoardListTail] = BoardList,
+    replay_no_show(BoardAfter, TailMoves, BoardListTail).
+    
 
 print_elements([]).
 print_elements(List):-
@@ -94,6 +109,7 @@ print_elements(List):-
     print_elements(T).
 
 
+% Prints out a terse view of solutions for each missing peg.
 terse():-
     numlist(0, 14, Indices),
     terse(Indices).
@@ -105,8 +121,25 @@ terse(Indices):-
     print(Board),
     nl,
     print_elements(Moves),
+    replay_no_show(Board, Moves, BoardList),
+    last(BoardList, FinalBoard),
+    print(FinalBoard),
     nl,
     nl,
     terse(T).
    
+go():-
+   numlist(0, 4, Indices),
+   go(Indices),
+
+go([]).
+go(Indices):-
+    [H | T] = Indices,
+    write('=== '),write(H),write(' ==='),nl,
+    puzzle(H, Moves, Board),
+    show(Board),
+    nl,
+    replay(Board, Moves),
+    go(T).
+
 
